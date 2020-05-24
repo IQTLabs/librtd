@@ -1,0 +1,123 @@
+# This is just an example to get you started. You may wish to put all of your
+# tests into a single file, or separate them into multiple `test1`, `test2`
+# etc. files (better names are recommended, just make sure the name starts with
+# the letter 't').
+#
+# To run these tests, simply execute `nimble test`.
+
+import unittest
+import sequtils
+import librtd
+import random
+import tables
+
+suite "kmers":
+  test "total number of k-mers is correct":
+    check: 
+      toSeq(kmers("ATGCAGATA", 1)).len == 9
+      toSeq(kmers("ATGCAGATA", 2)).len == 8
+    var randomDNA = ""
+    for i in 0..<100:
+      randomDNA.add(sample(["A", "T", "G", "C"]))
+    for k in 1..99:
+      check:
+        toSeq(kmers(randomDNA, k)).len == 100 - k + 1
+
+  test "check the k-mers themselves are valid":
+    check:
+      toSeq(kmers("ATGC", 1)) == @[(0, "A"), (1, "T"), (2, "G"), (3, "C")]
+      toSeq(kmers("ATGC", 2)) == @[(0, "AT"), (1, "TG"), (2, "GC")]
+      toSeq(kmers("ATGC", 3)) == @[(0, "ATG"), (1, "TGC")]
+      toSeq(kmers("ATGC", 4)) == @[(0, "ATGC")]
+
+  test "automatic capitalization":
+    check:
+      toSeq(kmers("aTGC", 1)) == @[(0, "A"), (1, "T"), (2, "G"), (3, "C")]
+      toSeq(kmers("AtGC", 2)) == @[(0, "AT"), (1, "TG"), (2, "GC")]
+      toSeq(kmers("ATgC", 3)) == @[(0, "ATG"), (1, "TGC")]
+      toSeq(kmers("atGc", 4)) == @[(0, "ATGC")]
+
+  test "too large a k value raises an error":
+    expect InvalidKmerLengthError:
+      discard toSeq(kmers("ATGC", 10))
+
+  test "degenerate sequence raises an error":
+    expect DegenerateBaseError:
+      discard toSeq(kmers("ATGCN", 1))
+    
+suite "kmersIndices":
+  test "k=1":
+    let dna = "ATCGGGACCT"
+    check:
+      kmerIndices(dna, 1) == {"C": @[2, 7, 8], 
+                              "A": @[0, 6], 
+                              "T": @[1, 9], 
+                              "G": @[3, 4, 5]}.toTable
+
+  test "k=2":
+    check kmerIndices("ACG", 2) == {"AC": @[0], "CG": @[1]}.toTable
+
+  test "k=3":
+    check kmerIndices("ACGGC", 3) == {"ACG": @[0], "CGG": @[1], "GGC": @[2]}.toTable
+
+  test "missing k-mer isn't in the output table":
+    check kmerIndices("ACG", 1) == {"C": @[1], "A": @[0], "G": @[2]}.toTable
+
+suite "sameKmerReturnTimes":
+  test "k=1":
+    check:
+      sameKmerReturnTimes("ATCACA", 1) == {"A": @[3, 2], "C": @[2]}.toTable
+      sameKmerReturnTimes("CTCGTG", 1) == {"C": @[2], "T": @[3], "G": @[2]}.toTable
+  test "k=2":
+    check sameKmerReturnTimes("ATCGAT", 2) == {"AT": @[4]}.toTable
+  test "k=3":
+    check sameKmerReturnTimes("ATCATC", 3) == {"ATC": @[3]}.toTable
+
+suite "distToNextGreaterIndex":
+  test "documentation example":
+    check distToNextGreaterIndex(@[1, 3, 5, 6, 9], @[2, 4, 7]) == @[1, 1, 2, 1]
+  test "all indices in the second seq are greater than largest of first":
+    check distToNextGreaterIndex(@[1, 2, 3], @[4, 5, 6]) == @[3, 2, 1]
+  test "no indices in the second seq are larger than any seq":
+    check distToNextGreaterIndex(@[4, 5, 6], @[1, 2, 3]) == newSeq[int]()
+
+suite "pairwiseKmerReturnTimes":
+  test "documentation example":
+    check pairwiseKmerReturnTimes("ATAAT", 1) == {"A_T": @[1, 2, 1], "A_A": @[2, 1], "T_A": @[1], "T_T": @[3]}.toTable
+  test "k=2 tiny example":
+    check:
+      pairwiseKmerReturnTimes("ATAAT", 2) == {"AT_TA": @[1], 
+                                              "AT_AA": @[2], 
+                                              "AT_AT": @[3],
+                                              "AA_AT": @[1],
+                                              "TA_AA": @[1],
+                                              "TA_AT": @[2]}.toTable
+
+suite "reverseComplementReturnTimes":
+  test "documentation example":
+     check reverseComplementReturnTimes("ATATCCGG", 2) == {"AT": @[2], "CC": @[2]}.toTable 
+  test "no reverse complements in the sequence":
+    for k in 2..5:
+      check:
+        reverseComplementReturnTimes("ATGCCCCCC", k).len == 0
+  test "k=1":
+    check reverseComplementReturnTimes("ATGCAGAT", 1) == {"A": @[1, 3, 1],
+                                                          "T": @[3],
+                                                          "G": @[1],
+                                                          "C": @[2]}.toTable
+
+suite "returnTimeDistribution":
+  test "documentation example":
+    check returnTimeDistribution("AAATAGA", 1) == {"A_mean": 1.5, "A_std": 0.5}.toTable
+
+  test "check length is as expected":
+    let dna = "ATAGCAAGGATACAGATA"
+    for k in 2..8:
+      check:
+        returnTimeDistribution(dna, k).len == 2 * sameKmerReturnTimes(dna, k).len
+        returnTimeDistribution(dna, k, pairwise = true).len == 2 * pairwiseKmerReturnTimes(dna, k).len
+        returnTimeDistribution(dna, k, reverseComplement = true).len == 2 * reverseComplementReturnTimes(dna, k).len
+
+    test "pairwise and reverseComplement can't both be true":
+      expect ValueError:
+        discard returnTimeDistribution("ATGC", 1, reverseComplement = true, pairwise = true)
