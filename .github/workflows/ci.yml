@@ -27,16 +27,14 @@ jobs:
           - ubuntu-latest
           - windows-latest
           - macOS-latest
-    - uses: actions/checkout@v2
-    - uses: jiro4989/setup-nim-action@master
-      with:
-        nim-version: "1.0.4"
-    - name: Install dependencies
-      run: nimble install -Y
-    - name: Verify project compiles
-      run: nimble build
-    - name: Print librtd version from compiled CLI
-      run: ./librtd -v
-    
-    
-
+    steps:
+      - uses: actions/checkout@v2
+      - uses: jiro4989/setup-nim-action@master
+        with:
+          nim-version: "1.0.4"
+      - name: Install dependencies
+        run: nimble install -Y
+      - name: Verify project compiles
+        run: nimble build
+      - name: Print librtd version from compiled CLI
+        run: ./librtd -v
