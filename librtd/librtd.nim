@@ -65,6 +65,7 @@ import strutils
 import strformat
 import tables
 import stats
+import nimpy
 
 const version = "0.1"
 
@@ -237,7 +238,7 @@ func returnTimeDistribution*(returnTimes: Table[string, seq[int]]): Table[string
     result[&"{kmer}_mean"] = statistics.mean
     result[&"{kmer}_std"] = statistics.standardDeviation
 
-func returnTimeDistribution*(x: string, k: Positive, pairwise = false, reverseComplement = false): Table[string, float] =
+func returnTimeDistribution*(x: string, k: Positive, pairwise: bool = false, reverseComplement: bool = false): Table[string, float] {.exportpy.} =
   ## The master function for `librtd`, capable of accessing all of the library's functionality.
   ## 
   ## This overloaded function is capable of computing the RTD for same *k*-mers,
@@ -256,145 +257,3 @@ func returnTimeDistribution*(x: string, k: Positive, pairwise = false, reverseCo
     result = returnTimeDistribution(reverseComplementReturnTimes(x, k))
   else:
     result = returnTimeDistribution(sameKmerReturnTimes(x, k))
-
-when isMainModule:
-  import docopt
-  import terminal
-  import os
-  import times
-  import progress
-
-  let doc = """
-  Return time distribution (RTD) calculation.
-
-  Takes input FASTA files and outputs a line-delimited JSON (.jsonl) file containing the RTD for each k-mer.
-  If no output file is specified, it will be written to stdout.
-  All log messages are written to stderr.
-
-  Usage:
-    rtd <k> <input> [<output>] [--reverse-complement|--pairwise]
-    rtd (-h | --help)
-    rtd --version
-
-  Options:
-    -r, --reverse-complement  Whether to compute distances to reverse complement k-mers
-    -p, --pairwise            Whether to compute the distances between every pair of k-mers
-    -h, --help                Show this screen.
-    --version                 Show version.
-  """
-
-  let args = docopt(doc, version = version)
-
-  # parse the inputs into variables
-  let input = $args["<input>"]
-  let output = $args["<output>"]
-
-  template exit(errorMesage: string) =
-    ## A handy template for creating errors and exiting
-    stderr.styledWrite(fgRed, "Error: ", fgDefault, errorMesage, "\n")
-    quit(1)
-
-  # attempt to parse the k value
-  var k: int
-  try:
-    k = ($args["<k>"]).parseInt
-  except ValueError:
-    let invalidK = $args["<k>"]
-    exit(&"k value must be an integer, not \"{invalidK}\"")
-
-  # check that args are valid
-  if k <= 0:
-    exit(&"k value must be greater than 0, got {k}")
-  if not fileExists(input):
-    exit(&"File {input} does not exist")
-  if fileExists(output):
-    exit(&"Output file {output} already exists. To preserve data integrity, aborting.")
-
-  iterator fasta(filename: string): tuple[id: string, sequence: string] =
-    ## Iterate over the lines in a FASTA file, yielding one record at a time 
-    var id = ""
-    var row = ""
-    for line in filename.lines:
-      if line.startsWith(">"):
-        if row != "":
-          yield (id, row)
-          row = ""
-        id = line[1..line.high]
-      else:
-        row &= line.strip
-    yield (id, row)
-    row = ""
-
-  # check that the sequences are non-degenerate and count how many there are
-  var invalidId = ""
-  var totalRecords = 0
-  for line in input.lines:
-    if line.startswith(">"):
-      invalidId = line[1..line.high]
-      totalRecords += 1
-      continue
-    if line.count({'a'..'z', 'A'..'Z', '0'..'9'} - {'a', 'A', 'u', 'U', 't', 'T', 'g', 'G', 'c', 'C'}) > 0:
-       exit(&"Invalid (non AUTGCautgc) character in record #{totalRecords}: {invalidId}")
-    
-    # also check that there are no Us in the sequence if doing reverse complement RTD
-    if args["--reverse-complement"] and line.count({'U', 'u'}) > 0:
-      exit("Reverse complement RTD is not currently supported for RNA sequences")
-
-  stderr.styledWrite(fgCyan, "Info: ", fgDefault, &"Using librtd v{version} by Benjamin D. Lee. (c) 2020 IQT Labs, LLC.\n")
-
-  template warn(message) =
-    stderr.styledWrite(fgYellow, "Warning: ", fgDefault, message, "\n") 
-    
-
-  # decide whether to write to stdout or to a file depending on the args
-  var f: File
-  if args["<output>"]:
-    f = open(output, fmWrite)
-  else:
-    warn("Writing data to stdout")
-    f = stdout
-  
-  # warn the user if computing pairwise RTD
-  if args["--pairwise"]:
-    warn("Computing pairwise RTD is much slower than computing regular or reverse complement RTD.")
-
-  # if k > 6, warn the iser
-  if k > 6:
-    warn("Values of k larger than six tend to be very sparse, so use at your own peril.")
-
-  # collect metadata about the processing
-  var totalSequences = 0
-  var totalBases = 0
-  let time = cpuTime()
-
-  # set up the progress bar
-  var bar = newProgressBar(total=totalRecords, output=stderr)
-  bar.start()
-
-  # perform the actual computation
-  for id, sequence in fasta(input):
-    let rtd = $returnTimeDistribution(sequence, k, pairwise = args["--pairwise"], reverseComplement = args["--reverse-complement"])
-
-    # if the RTD is blank, it won't be valid json, so we have to override it
-    var jsonl: string
-    if rtd != "{:}": 
-      jsonl = "{" & &"\"id\": \"{id}\", {rtd[1..rtd.high]}" 
-    else: 
-      jsonl = "{" & &"\"id\": \"{id}\"" & "}" 
-    f.writeLine(jsonl)
-
-    # update the metadata
-    totalSequences += 1
-    totalBases += sequence.len
-    bar.increment()
-    
-  # clean up
-  f.close()
-  stderr.write() # used to put the next line onto its own line from the progress bar
-  stderr.styledWrite(fgGreen,
-                        "Success: ",
-                        fgDefault,
-                        &"Analyzed RTD for {totalSequences} sequence",
-                        if totalSequences > 1: "s " else: " ",
-                        &"totaling {totalBases} bp ",
-                        &"in {(cpuTime() - time):.1f} seconds.\n")

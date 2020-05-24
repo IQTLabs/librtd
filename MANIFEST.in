@@ -1,0 +1,7 @@
+# NIMPORTER BUNDLE
+include nim-extensions/tests.tests/nimbase.h
+include nim-extensions/librtd.librtd/nimbase.h
+include nim-extensions/tests.tests/nimbase.h
+include nim-extensions/tests.tests/nimbase.h
+include nim-extensions/tests.tests/nimbase.h
+include nim-extensions/librtd.librtd/nimbase.h
