@@ -37,4 +37,4 @@ jobs:
       - name: Verify project compiles
         run: nimble build
       - name: Print librtd version from compiled CLI
-        run: ./librtd -v
+        run: ./librtd --version
