@@ -10,7 +10,7 @@ jobs:
       - name: Setup Nim
         uses: jiro4989/setup-nim-action@v1.0.2
         with:
-          nim-version: "1.0.2"
+          nim-version: "1.0.4"
       - name: Nim version check
         run: |
           nim -v
