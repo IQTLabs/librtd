@@ -67,8 +67,6 @@ import tables
 import stats
 import nimpy
 
-const version = "0.1"
-
 type
   InvalidKmerLengthError* = object of CatchableError ## \
   ## Raised when the *k* value passed is too large for the given sequence.
