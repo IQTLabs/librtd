@@ -142,3 +142,6 @@ nimcache/
 nimblecache/
 htmldocs/
 nim-extensions/
+
+# VS Code folder
+.vscode/
