@@ -56,10 +56,19 @@
 ## let rtd = returnTimeDistribution(returnTimes)
 ## ```
 ## 
-## ### A Note on Degenerate Bases
+## ## A Note on Degenerate Bases
 ##
 ## Degenerate bases (*i.e.* non AUTGC) bases don't have a clearly defined return time distribution since they are ambiguous.
 ## Therefore, to prevent invalid seqeunces resulting in invalid results, the `kmers <#kmers.i,string,Positive>`_ iterator will raise a `DegenerateBaseError <#DegenerateBaseError>`_ when confronted with a degenerate sequence. 
+## 
+## ## A Note on Naming
+## 
+## Nim and Python, although they share nearly identical syntax at the high level, vary signifcantly with respect to naming.
+## In Python, `PEP8 <https://www.python.org/dev/peps/pep-0008/>`_ states that "function names should be lowercase, with words separated by underscores as necessary to improve readability."
+## Nim *prefers* camelCase, but, importantly, doesn't distinguish between the two due to its definition of `identifier equality <https://nim-lang.github.io/Nim/manual.html#lexical-analysis-identifier-equality>`_.
+## Therefore, calling `kmer_indices` in Nim is precisely the same as calling `kmerIndices`.
+## Since the symbols are exported to Python named precisely as they are in the `librtd.nim` file, PEP8-style naming is used.
+## This results in the best of both worlds, since Nim users can call the functions in standard Nim style and Python users can call them in standard Python style,
 
 import strutils
 import strformat
@@ -95,11 +104,13 @@ iterator kmers*(x: string, k: Positive, degeneratesAllowed = false): (int, strin
   for i in 0..(x.len - k):
     yield (i, x[i ..< i + k].toUpper)
 
-func kmerIndices*(x: string, k: Positive): Table[string, seq[int]] =
+func kmer_indices*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
   ## Returns a Table mapping *k*-mers to their indices in the input string.
   ## 
   ## In the when a *k*-mer is not present within the input string, it **will not** be in the resultant table.
   ## This is useful to prevent very large sparse tables as the value of *k* increases.
+  ## 
+  ## This function is exported to Python.
   runnableExamples:
     import tables
     let dna = "ATCGGGACCT"
@@ -109,7 +120,7 @@ func kmerIndices*(x: string, k: Positive): Table[string, seq[int]] =
     if result.hasKeyOrPut(kmer, @[i]):
       result[kmer].add(i)
 
-func sameKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
+func same_kmer_return_times*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
   ## Computes the return time distances (in bases) for `indices`.
   runnableExamples:
     import tables
@@ -129,17 +140,19 @@ func sameKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[i
       if result.hasKeyOrPut(kmer, @[kmerIndices[i+1] - kmerIndices[i]]):
         result[kmer].add(kmerIndices[i+1] - kmerIndices[i])
 
-func sameKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
+func same_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
   ## The same function as above, but overloaded to automatically call `kmerIndices <#kmerIndices,string,Positive>`_.
   ##
   ## This is less efficient when reanalyzing the same sequence since the *k*-mer indices are recomputed.
+  ## 
+  ## This function is exported to Python.
   runnableExamples:
     import tables
     assert sameKmerReturnTimes("ATCACA", 1) == {"A": @[3, 2], "C": @[2]}.toTable
     
   sameKmerReturnTimes(kmerIndices(x, k))
 
-func distToNextGreaterIndex*(indicies1: seq[int], indices2: seq[int]): seq[int] =
+func dist_to_next_greater_index*(indicies1: seq[int], indices2: seq[int]): seq[int] {.exportpy.} =
   ## Given two seqs of *k*-mer indices, calculate the distance between occurrences of the first *k*-mer and the second.
   ## 
   ## In this case, `indices1` are the indices of the first *k*-mer and `indices2` are the indices of the second *k*-mer.
@@ -149,6 +162,8 @@ func distToNextGreaterIndex*(indicies1: seq[int], indices2: seq[int]): seq[int] 
   ## Therefore, it has no distance to any index of `indices2`.
   ## 
   ## You probably won't need to call this directly, but it may be useful for creating other RTD metrics.
+  ##
+  ## This function is exported to Python. 
   runnableExamples:
     assert distToNextGreaterIndex(@[1, 3, 5, 6, 9], @[2, 4, 7]) == @[1, 1, 2, 1]
 
@@ -164,7 +179,7 @@ func distToNextGreaterIndex*(indicies1: seq[int], indices2: seq[int]): seq[int] 
       else:
         last_indices2_idx += 1
 
-func pairwiseKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
+func pairwise_kmer_return_times*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
   ## Calculates the return times between each pair of *k*-mers in the input table.
   ## 
   ## This can be **slow**! 
@@ -181,10 +196,12 @@ func pairwiseKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, s
       if distances.len > 0:
         result[&"{kmer1}_{kmer2}"] = distances
 
-func pairwiseKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] = 
+func pairwise_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} = 
   ## The same function as above, but overloaded to automatically call `pairwiseKmerReturnTimes <#pairwiseKmerReturnTimes,Table[string,seq[T][int]]>`_ on the result of `kmerIndices <#kmerIndices,string,Positive>`_.
   ## 
   ## As with the other overloaded functions, this may be slower when reanaylzing the same sequence since the *k*-mer indices are recomputed.
+  ## 
+  ## This function is exported to Python. 
   runnableExamples:
     import tables
     assert pairwiseKmerReturnTimes("ATAAT", 1) == {"A_T": @[1, 2, 1], "A_A": @[2, 1], "T_A": @[1], "T_T": @[3]}.toTable
@@ -200,7 +217,7 @@ func reverseComplement(seq: string): string =
   for i in countdown(seq.high, seq.low):
     result.add(mapping[seq[i]])
 
-func reverseComplementReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
+func reverse_complement_return_times*(indices: Table[string, seq[int]]): Table[string, seq[int]] =
   ## Computes the distance from a *k*-mer to its reverse complement given a mapping of *k*-mers to their indices.
   ## 
   ## Note that that this is **not currently defined** for RNA sequences.
@@ -215,15 +232,17 @@ func reverseComplementReturnTimes*(indices: Table[string, seq[int]]): Table[stri
     if distances.len > 0:
       result[kmer] = distances
 
-func reverseComplementReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
+func reverse_complement_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
   ## The same as above but overloaded to automatically call reverseComplementReturnTimes <#reverseComplementReturnTimes,Table[string,seq[T][int]]>`_ after computing `kmerIndices <#kmerIndices,string,Positive>`_.
+  ## 
+  ## This function is exported to Python. 
   runnableExamples:
     import tables
     assert reverseComplementReturnTimes("ATATCCGG", 2) == {"AT": @[2], "CC": @[2]}.toTable 
 
   reverseComplementReturnTimes(kmerIndices(x, k))
 
-func returnTimeDistribution*(returnTimes: Table[string, seq[int]]): Table[string, float] =
+func return_time_distribution*(returnTimes: Table[string, seq[int]]): Table[string, float] =
   ## Given a mapping of *k*-mers to their return times, compute the mean and standard deviation of the return times.
   ## 
   ## The output table will be of the form `{"{kmer}_mean": ..., "{kmer}_std"...}` with each *k*-mer represented by two keys, one for the mean and the other for the standard deviation.
@@ -236,13 +255,15 @@ func returnTimeDistribution*(returnTimes: Table[string, seq[int]]): Table[string
     result[&"{kmer}_mean"] = statistics.mean
     result[&"{kmer}_std"] = statistics.standardDeviation
 
-func returnTimeDistribution*(x: string, k: Positive, pairwise: bool = false, reverseComplement: bool = false): Table[string, float] {.exportpy.} =
+func return_time_distribution*(x: string, k: Positive, pairwise: bool = false, reverse_complement: bool = false): Table[string, float] {.exportpy.} =
   ## The master function for `librtd`, capable of accessing all of the library's functionality.
   ## 
   ## This overloaded function is capable of computing the RTD for same *k*-mers,
   ## reverse complement *k*-mers, and pairwise *k*-mers, depending on the arguments.
   ## It automatically computes summary statistics.
   ## Note that pairwise and reverse complement cannot be true.
+  ## 
+  ## This function is exported to Python. 
   runnableExamples:
     import tables
     assert returnTimeDistribution("AAATAGA", 1) == {"A_mean": 1.5, "A_std": 0.5}.toTable
