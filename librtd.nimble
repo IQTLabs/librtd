@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.0.1"
 author        = "Benjamin Lee"
 description   = "Generalized k-mer return time distribution calculation"
 license       = "Apache-2.0"
