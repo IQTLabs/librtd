@@ -16,7 +16,7 @@ Options:
 --version                 Show version.
 """
 from docopt import docopt
-import nimporter
+import nimporter # noqa
 from .cli import main
 from . import __version__
 
