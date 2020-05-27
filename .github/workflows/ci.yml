@@ -26,6 +26,13 @@ jobs:
       - name: Run tests
         run: nimble test
   test-cli:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-lates
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
