@@ -18,10 +18,11 @@ Options:
 from docopt import docopt
 import nimporter
 from .cli import main
+from . import __version__
 
 
 def cli_wrapper():
-    arguments = docopt(__doc__, version="Naval Fate 2.0")
+    arguments = docopt(__doc__, version="librtd v" + __version__)
     output = arguments["<output>"] if arguments["<output>"] is not None else "stdout"
     main(
         int(arguments["<k>"]),
