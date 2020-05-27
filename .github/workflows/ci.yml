@@ -10,7 +10,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macOS-lates
+          - macOS-latest
     steps:
       - uses: actions/checkout@v2
       - name: Setup Nim
@@ -32,7 +32,7 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-          - macOS-lates
+          - macOS-latest
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python
