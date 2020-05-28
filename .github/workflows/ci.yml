@@ -3,11 +3,17 @@ name: CI
 on: [push]
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  test-api:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+          - macOS-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Setup Nim
+      - name: Set up Nim
         uses: jiro4989/setup-nim-action@v1.0.2
         with:
           nim-version: "1.0.4"
@@ -19,7 +25,7 @@ jobs:
         run: nimble install -Y
       - name: Run tests
         run: nimble test
-  build:
+  test-cli:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -29,12 +35,20 @@ jobs:
           - macOS-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: jiro4989/setup-nim-action@master
+      - name: Set up Python
+        uses: actions/setup-python@v1
         with:
-          nim-version: "1.0.4"
+          python-version: "3.x"
+      - name: Set up Nim
+        uses: jiro4989/setup-nim-action@v1.0.2
+        with:
+          nim-version: "1.0.6"
       - name: Install dependencies
-        run: nimble install -Y
-      - name: Verify project compiles
-        run: nimble build
-      - name: Print librtd version from compiled CLI
-        run: ./librtd --version
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install setuptools nimporter
+          nimble install -Y
+      - name: Install librtd
+        run: pip install -e .
+      - name: Check CLI worked
+        run: librtd --version
