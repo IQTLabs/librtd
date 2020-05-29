@@ -47,5 +47,6 @@ jobs:
           python -c "import librtd; print(librtd.return_time_distribution('ATGCA', 1))"
       - name: Check CLI worked
         run: |
+          cat test.fasta
           librtd --version 
           librtd 1 test.fasta > /dev/null
