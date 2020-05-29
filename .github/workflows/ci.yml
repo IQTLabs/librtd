@@ -44,6 +44,7 @@ jobs:
         run: |
           cd librtd-py
           pip install -e .
+          python -c "import librtd; print(librtd.return_time_distribution('ATGCA', 1))"
       - name: Check CLI worked
         run: |
           librtd --version 
