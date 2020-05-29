@@ -40,14 +40,13 @@ jobs:
           python -m pip install setuptools nimporter
           cd librtdpy
           nimble install -Y
-      - name: Install librtd
+      - name: Install librtd CLI and Python interop
         run: |
           cd librtd-py
+          nimporter compile
           pip install -e .
           python -c "import librtd; print(librtd.return_time_distribution('ATGCA', 1))"
       - name: Check CLI worked
         run: |
-          cat test.fasta
-          wc -l test.fasta
           librtd --version 
           librtd 1 test.fasta > /dev/null
