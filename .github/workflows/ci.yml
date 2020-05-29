@@ -23,8 +23,8 @@ jobs:
         run: nimble -v
       - name: Change directories
         run: |
-        ls
-        cd librtd
+          ls
+          cd librtd
       - name: Install dependencies
         run: nimble install -Y
       - name: Run tests
