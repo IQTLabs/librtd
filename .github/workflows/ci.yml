@@ -50,4 +50,4 @@ jobs:
         run: |
           cd librtd-py
           librtd --version 
-          librtd 1 test.fasta > /dev/null
+          librtd 1 ../test.fasta > /dev/null
