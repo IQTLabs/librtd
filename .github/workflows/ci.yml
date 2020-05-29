@@ -21,10 +21,9 @@ jobs:
         run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Change directories
-        run: cd librtd
       - name: Install dependencies
         run: |
+          cd librtd
           ls
           cat librtd.nimble
           nimble install -Y
