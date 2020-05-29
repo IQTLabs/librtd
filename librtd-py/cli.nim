@@ -11,13 +11,14 @@ import tables
 
 const version = "0.1"
 
-template exit(errorMesage: string) =
-  ## A handy template for creating errors and exiting
-  stderr.styledWrite(fgRed, "Error: ", fgDefault, errorMesage, "\n")
+# Some short templates for prettier output
+template styledWrite(color: ForegroundColor, messageType: string, message: string ) = 
+  stderr.styledWrite(color, messageType, ": ", fgDefault, message, "\n") 
+template exit(message: string) =
+  styledWrite(fgRed, "Error", message)
   quit(1)
-
-template warn(message) =
-  stderr.styledWrite(fgYellow, "Warning: ", fgDefault, message, "\n") 
+template warn(message) = styledWrite(fgYellow, "Warning", message)
+template info(message) = styledWrite(fgCyan, "Info", message) 
 
 iterator fasta(filename: string): tuple[id: string, sequence: string] =
   ## Iterate over the lines in a FASTA file, yielding one record at a time 
@@ -59,8 +60,11 @@ proc main*(k: int, input: string, output: string = "stdout", reverseComplement: 
     if reverseComplement and line.count({'U', 'u'}) > 0:
       exit("Reverse complement RTD is not currently supported for RNA sequences")
 
-  stderr.styledWrite(fgCyan, "Info: ", fgDefault, &"Using librtd v{version} by Benjamin D. Lee. (c) 2020 IQT Labs, LLC.\n")
-    
+  # Add additional information
+  info(&"Using librtd v{version} by Benjamin D. Lee. (c) 2020 IQT Labs, LLC.")
+  when not defined(release):
+    warn(&"Compiled on {CompileDate} with Nim v{NimVersion} as a debug build. This will likely be slow!")
+
   # decide whether to write to stdout or to a file depending on the args
   var f: File
   if output != "stdout":
