@@ -40,3 +40,11 @@ jobs:
           python -m pip install setuptools nimporter
           cd librtdpy
           nimble install -Y
+      - name: Install librtd
+        run: |
+          cd librtd-py
+          pip install -e .
+      - name: Check CLI worked
+        run: |
+          librtd --version 
+          librtd 1 test.fasta > /dev/null
