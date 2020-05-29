@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 import nimporter
 
 setup(
@@ -6,14 +6,14 @@ setup(
     version="0.0.1",
     author="Benjamin D. Lee",
     author_email="benjamindlee@me.com",
-    packages=["librtd"],
+    packages=find_packages(),
     description="Generalized k-mer return time distribution calculation",
-    long_description=open("README.md").read(),
+    # long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
     install_requires=["docopt"],
     url="https://github.com/Lab41/librtd",
     ext_modules=nimporter.build_nim_extensions(),
-    entry_points={"console_scripts": ["librtd = librtd.cli_wrapper:cli_wrapper"]},
+    entry_points={"console_scripts": ["librtd = cli_wrapper:cli_wrapper"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",

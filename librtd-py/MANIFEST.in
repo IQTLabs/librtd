@@ -1,0 +1,3 @@
+# NIMPORTER BUNDLE
+include nim-extensions/cli/nimbase.h
+include nim-extensions/librtdpy/nimbase.h

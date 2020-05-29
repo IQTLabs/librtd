@@ -74,7 +74,6 @@ import strutils
 import strformat
 import tables
 import stats
-import nimpy
 
 type
   InvalidKmerLengthError* = object of CatchableError ## \
@@ -104,7 +103,7 @@ iterator kmers*(x: string, k: Positive, degeneratesAllowed = false): (int, strin
   for i in 0..(x.len - k):
     yield (i, x[i ..< i + k].toUpper)
 
-func kmer_indices*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
+func kmer_indices*(x: string, k: Positive): Table[string, seq[int]] =
   ## Returns a Table mapping *k*-mers to their indices in the input string.
   ## 
   ## In the when a *k*-mer is not present within the input string, it **will not** be in the resultant table.
@@ -140,7 +139,7 @@ func same_kmer_return_times*(indices: Table[string, seq[int]]): Table[string, se
       if result.hasKeyOrPut(kmer, @[kmerIndices[i+1] - kmerIndices[i]]):
         result[kmer].add(kmerIndices[i+1] - kmerIndices[i])
 
-func same_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
+func same_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] =
   ## The same function as above, but overloaded to automatically call `kmerIndices <#kmerIndices,string,Positive>`_.
   ##
   ## This is less efficient when reanalyzing the same sequence since the *k*-mer indices are recomputed.
@@ -152,7 +151,7 @@ func same_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] {.
     
   sameKmerReturnTimes(kmerIndices(x, k))
 
-func dist_to_next_greater_index*(indicies1: seq[int], indices2: seq[int]): seq[int] {.exportpy.} =
+func dist_to_next_greater_index*(indicies1: seq[int], indices2: seq[int]): seq[int] =
   ## Given two seqs of *k*-mer indices, calculate the distance between occurrences of the first *k*-mer and the second.
   ## 
   ## In this case, `indices1` are the indices of the first *k*-mer and `indices2` are the indices of the second *k*-mer.
@@ -196,7 +195,7 @@ func pairwise_kmer_return_times*(indices: Table[string, seq[int]]): Table[string
       if distances.len > 0:
         result[&"{kmer1}_{kmer2}"] = distances
 
-func pairwise_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} = 
+func pairwise_kmer_return_times*(x: string, k: Positive): Table[string, seq[int]] = 
   ## The same function as above, but overloaded to automatically call `pairwiseKmerReturnTimes <#pairwiseKmerReturnTimes,Table[string,seq[T][int]]>`_ on the result of `kmerIndices <#kmerIndices,string,Positive>`_.
   ## 
   ## As with the other overloaded functions, this may be slower when reanaylzing the same sequence since the *k*-mer indices are recomputed.
@@ -232,7 +231,7 @@ func reverse_complement_return_times*(indices: Table[string, seq[int]]): Table[s
     if distances.len > 0:
       result[kmer] = distances
 
-func reverse_complement_return_times*(x: string, k: Positive): Table[string, seq[int]] {.exportpy.} =
+func reverse_complement_return_times*(x: string, k: Positive): Table[string, seq[int]] =
   ## The same as above but overloaded to automatically call reverseComplementReturnTimes <#reverseComplementReturnTimes,Table[string,seq[T][int]]>`_ after computing `kmerIndices <#kmerIndices,string,Positive>`_.
   ## 
   ## This function is exported to Python. 
@@ -255,7 +254,7 @@ func return_time_distribution*(returnTimes: Table[string, seq[int]]): Table[stri
     result[&"{kmer}_mean"] = statistics.mean
     result[&"{kmer}_std"] = statistics.standardDeviation
 
-func return_time_distribution*(x: string, k: Positive, pairwise: bool = false, reverse_complement: bool = false): Table[string, float] {.exportpy.} =
+func return_time_distribution*(x: string, k: Positive, pairwise: bool = false, reverse_complement: bool = false): Table[string, float] =
   ## The master function for `librtd`, capable of accessing all of the library's functionality.
   ## 
   ## This overloaded function is capable of computing the RTD for same *k*-mers,
