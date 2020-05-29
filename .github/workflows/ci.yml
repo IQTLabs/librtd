@@ -48,5 +48,6 @@ jobs:
       - name: Check CLI worked
         run: |
           cat test.fasta
+          wc -l test.fasta
           librtd --version 
           librtd 1 test.fasta > /dev/null
