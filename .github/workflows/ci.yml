@@ -25,6 +25,7 @@ jobs:
         run: |
           ls
           cd librtd
+          ls
       - name: Install dependencies
         run: nimble install -Y
       - name: Run tests
