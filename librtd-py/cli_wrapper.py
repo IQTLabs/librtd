@@ -17,8 +17,8 @@ Options:
 """
 from docopt import docopt
 import nimporter # noqa
-from .cli import main
-from . import __version__
+from cli import main
+from librtd import __version__
 
 
 def cli_wrapper():

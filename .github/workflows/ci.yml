@@ -3,7 +3,7 @@ name: CI
 on: [push]
 
 jobs:
-  test-api:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -21,34 +21,33 @@ jobs:
         run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Install dependencies
-        run: nimble install -Y
-      - name: Run tests
-        run: nimble test
-  test-cli:
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os:
-          - ubuntu-latest
-          - windows-latest
-          - macOS-latest
-    steps:
-      - uses: actions/checkout@v2
+      - name: Install Nim dependencies
+        run: |
+          cd librtd  
+          nimble install -Y
+      - name: Run Nim tests
+        run: |
+          cd librtd
+          nimble test
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
           python-version: "3.x"
-      - name: Set up Nim
-        uses: jiro4989/setup-nim-action@v1.0.2
-        with:
-          nim-version: "1.2.0"
-      - name: Install dependencies
+      - name: Install Python dependencies
         run: |
+          cd librtd-py
           python -m pip install --upgrade pip
           python -m pip install setuptools nimporter
+          cd librtdpy
           nimble install -Y
-      - name: Install librtd
-        run: pip install -e .
+      - name: Install librtd CLI and Python interop
+        run: |
+          cd librtd-py
+          nimporter compile
+          pip install -e .
+          python -c "import librtd; print(librtd.return_time_distribution('ATGCA', 1))"
       - name: Check CLI worked
-        run: librtd --version
+        run: |
+          cd librtd-py
+          librtd --version 
+          librtd 1 ../test.fasta
