@@ -22,11 +22,11 @@ jobs:
       - name: Print Nimble version
         run: nimble -v
       - name: Change directories
-        run: |
-          ls
-          cd librtd
-          ls
+        run: cd librtd
       - name: Install dependencies
-        run: nimble install -Y
+        run: | 
+        ls
+        cat librtd.nimble
+        nimble install -Y
       - name: Run tests
         run: nimble test
