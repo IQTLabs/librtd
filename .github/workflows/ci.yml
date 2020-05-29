@@ -24,9 +24,9 @@ jobs:
       - name: Change directories
         run: cd librtd
       - name: Install dependencies
-        run: | 
-        ls
-        cat librtd.nimble
-        nimble install -Y
+        run: |
+          ls
+          cat librtd.nimble
+          nimble install -Y
       - name: Run tests
         run: nimble test
