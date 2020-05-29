@@ -21,11 +21,22 @@ jobs:
         run: nim -v
       - name: Print Nimble version
         run: nimble -v
-      - name: Install dependencies
+      - name: Install Nim dependencies
         run: |
           cd librtd  
           nimble install -Y
-      - name: Run tests
+      - name: Run Nim tests
         run: |
           cd librtd
           nimble test
+       - name: Set up Python
+          uses: actions/setup-python@v1
+          with:
+            python-version: "3.x"
+      - name: Install Python dependencies
+        run: |
+          cd librtd-py
+          python -m pip install --upgrade pip
+          python -m pip install setuptools nimporter
+          cd librtdpy
+          nimble install -Y
