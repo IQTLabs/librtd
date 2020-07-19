@@ -95,16 +95,16 @@ suite "pairwiseKmerReturnTimes":
 
 suite "reverseComplementReturnTimes":
   test "documentation example":
-     check reverseComplementReturnTimes("ATATCCGG", 2) == {"AT": @[2], "CC": @[2]}.toTable 
+     check reverseComplementReturnTimes("ATATCCGG", 2) == {"AT_rc": @[2], "CC_rc": @[2]}.toTable 
   test "no reverse complements in the sequence":
     for k in 2..5:
       check:
         reverseComplementReturnTimes("ATGCCCCCC", k).len == 0
   test "k=1":
-    check reverseComplementReturnTimes("ATGCAGAT", 1) == {"A": @[1, 3, 1],
-                                                          "T": @[3],
-                                                          "G": @[1],
-                                                          "C": @[2]}.toTable
+    check reverseComplementReturnTimes("ATGCAGAT", 1) == {"A_rc": @[1, 3, 1],
+                                                          "T_rc": @[3],
+                                                          "G_rc": @[1],
+                                                          "C_rc": @[2]}.toTable
 
 suite "returnTimeDistribution":
   test "documentation example":

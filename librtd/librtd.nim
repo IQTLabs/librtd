@@ -229,7 +229,7 @@ func reverse_complement_return_times*(indices: Table[string, seq[int]]): Table[s
       continue
     var distances = distToNextGreaterIndex(indices[kmer], indices[kmer.reverseComplement])
     if distances.len > 0:
-      result[kmer] = distances
+      result[kmer & "_rc"] = distances
 
 func reverse_complement_return_times*(x: string, k: Positive): Table[string, seq[int]] =
   ## The same as above but overloaded to automatically call reverseComplementReturnTimes <#reverseComplementReturnTimes,Table[string,seq[T][int]]>`_ after computing `kmerIndices <#kmerIndices,string,Positive>`_.
@@ -237,7 +237,7 @@ func reverse_complement_return_times*(x: string, k: Positive): Table[string, seq
   ## This function is exported to Python. 
   runnableExamples:
     import tables
-    assert reverseComplementReturnTimes("ATATCCGG", 2) == {"AT": @[2], "CC": @[2]}.toTable 
+    assert reverseComplementReturnTimes("ATATCCGG", 2) == {"AT_rc": @[2], "CC_rc": @[2]}.toTable 
 
   reverseComplementReturnTimes(kmerIndices(x, k))
 
