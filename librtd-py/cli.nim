@@ -64,6 +64,8 @@ proc main*(k: int, input: string, output: string = "stdout", reverseComplement: 
   info(&"Using librtd v{version} by Benjamin D. Lee. (c) 2020 IQT Labs, LLC.")
   when not defined(release):
     warn(&"Compiled on {CompileDate} with Nim v{NimVersion} as a debug build. This will likely be slow!")
+  when not defined(danger):
+    warn("Not compiled as a dangerous release build. Recompile with -d:danger for maximum performance.")
 
   # decide whether to write to stdout or to a file depending on the args
   var f: File

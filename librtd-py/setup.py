@@ -12,8 +12,8 @@ setup(
     long_description_content_type="text/markdown",
     install_requires=["docopt"],
     url="https://github.com/Lab41/librtd",
-    ext_modules=nimporter.build_nim_extensions(),
-    entry_points={"console_scripts": ["librtd = cli_wrapper:cli_wrapper"]},
+    ext_modules=nimporter.build_nim_extensions(danger=True),
+    entry_points={"console_scripts": ["rtd = cli_wrapper:cli_wrapper"]},
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: Apache Software License",
