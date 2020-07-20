@@ -49,5 +49,5 @@ jobs:
       - name: Check CLI worked
         run: |
           cd librtd-py
-          librtd --version 
-          librtd 1 ../test.fasta
+          rtd --version 
+          rtd 1 ../test.fasta
