@@ -29,7 +29,7 @@ jobs:
         run: |
           cd librtd
           nimble test
-          nim doc -o:docs/ librtd.nim
+          nim doc librtd.nim
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
@@ -52,8 +52,15 @@ jobs:
           cd librtd-py
           rtd --version 
           rtd 1 ../test.fasta
-
-      - name: Update docs
+  doc:
+    needs: test
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Generate docs
+        run: |
+          cd librtd
+          nim doc -o:docs/ librtd.nim
+      - name: Push to GitHub Pages
         uses: crazy-max/ghaction-github-pages@v1
         with:
           target_branch: gh-pages
