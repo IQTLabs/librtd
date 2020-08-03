@@ -1,6 +1,6 @@
 # librtd
 
-![CI](https://github.com/Lab41/librtd/workflows/CI/badge.svg)
+[![CI](https://github.com/Lab41/librtd/workflows/CI/badge.svg)](https://github.com/Lab41/librtd/actions)
 
 This project aims to make DNA and RNA _k_-mer return time distribution analysis simple, fast, and generalizable.
 
