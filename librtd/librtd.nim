@@ -98,7 +98,7 @@ iterator kmers*(x: string, k: Positive, degeneratesAllowed = false): (int, strin
   if k > x.len:
     raise newException(InvalidKmerLengthError, &"Unable to generate {k}-mers since {k} is longer than the input sequence, which is {x.len} bases long")
 
-  if x.toUpper.count({'A'..'Z', '0'..'9'} - {'A', 'U', 'T', 'G',  'C'}) > 0 and not degeneratesAllowed:
+  if x.toUpper.count({'A'..'Z', '0'..'9'} - {'A', 'U', 'T', 'G', 'C'}) > 0 and not degeneratesAllowed:
     raise newException(DegenerateBaseError, "Degenerate bases do not have defined RTD.")
 
   for i in 0..(x.len - k):
