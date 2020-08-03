@@ -233,7 +233,7 @@ func reverseComplementReturnTimes*(indices: Table[string, seq[int]]): Table[stri
       result[kmer & "_rc"] = distances
 
 func reverseComplementReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
-  ## The same as above but overloaded to automatically call reverseComplementReturnTimes <#reverseComplementReturnTimes,Table[string,seq[T][int]]>`_ after computing `kmerIndices <#kmerIndices,string,Positive>`_.
+  ## The same as above but overloaded to automatically call `reverseComplementReturnTimes <#reverseComplementReturnTimes,Table[string,seq[int]]>`_ after computing `kmerIndices <#kmerIndices,string,Positive>`_.
   ## 
   ## This function is exported to Python. 
   runnableExamples:
