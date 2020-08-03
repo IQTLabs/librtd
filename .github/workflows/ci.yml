@@ -25,10 +25,11 @@ jobs:
         run: |
           cd librtd  
           nimble install -Y
-      - name: Run Nim tests
+      - name: Run Nim tests and doctests
         run: |
           cd librtd
           nimble test
+          nim doc librtd.nim
       - name: Set up Python
         uses: actions/setup-python@v1
         with:
