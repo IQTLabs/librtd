@@ -223,7 +223,7 @@ func reverseComplementReturnTimes*(indices: Table[string, seq[int]]): Table[stri
   ## Note that that this is **not currently defined** for RNA sequences.
   runnableExamples:
     import tables
-    assert reverseComplementReturnTimes(kmerIndices("ATATCCGG", 2)) == {"AT": @[2], "CC": @[2]}.toTable 
+    assert reverseComplementReturnTimes(kmerIndices("ATATCCGG", 2)) == {"AT_rc": @[2], "CC_rc": @[2]}.toTable 
 
   for kmer, value in indices.pairs:
     if not indices.hasKey(kmer.reverseComplement):
