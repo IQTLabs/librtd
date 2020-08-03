@@ -37,7 +37,7 @@ jobs:
         run: |
           cd librtd-py
           python -m pip install --upgrade pip
-          python -m pip install setuptools nimporter
+          python -m pip install setuptools nimporter>=1.0.2
           cd librtdpy
           nimble install -Y
       - name: Install librtd CLI and Python interop
