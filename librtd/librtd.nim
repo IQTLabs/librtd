@@ -130,6 +130,9 @@ func sameKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[i
     # there are no return times if the k-mer shows up once
     if kmerIndices.len <= 1:
       continue
+
+    # initialize the output seq for the kmer
+    result[kmer] = newSeq[int](kmerIndices.len - 1)
     
     for i, kmerIndex in kmerIndices:
       # the last time a k-mer shows up, it doesn't have a return time
@@ -137,8 +140,7 @@ func sameKmerReturnTimes*(indices: Table[string, seq[int]]): Table[string, seq[i
         break
 
       # otherwise, insert the return time
-      if result.hasKeyOrPut(kmer, @[kmerIndices[i+1] - kmerIndices[i]]):
-        result[kmer].add(kmerIndices[i+1] - kmerIndices[i])
+      result[kmer][i] = kmerIndices[i+1] - kmerIndices[i]
 
 func sameKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
   ## The same function as above, but overloaded to automatically call `kmerIndices <#kmerIndices,string,Positive>`_.
