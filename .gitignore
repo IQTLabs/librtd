@@ -145,3 +145,6 @@ nim-extensions/
 
 # VS Code folder
 .vscode/
+
+# Nimporter manifest
+MANIFEST.in
