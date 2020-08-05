@@ -1,0 +1,2 @@
+rtd-phylogeny==0.0.51
+scikit-bio
