@@ -5,7 +5,6 @@ author        = "Benjamin Lee"
 description   = "Generalized k-mer return time distribution calculation"
 license       = "Apache-2.0"
 skipDirs      = @["tests"]
-installExt    = @["nim"]
 
 
 # Dependencies
