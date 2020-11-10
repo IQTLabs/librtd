@@ -9,7 +9,7 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v2
-      - run: ls /github/workspace
+      - run: ls /
       - name: Install Nim
         run: |
           cd ~
