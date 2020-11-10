@@ -12,12 +12,12 @@ jobs:
       - run: |
           curl -O https://nim-lang.org/choosenim/init.sh
           sh init.sh -y
-          export PATH=/github/home/.nimble/bin:$PATH
       - name: Build and publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
+          export PATH=/github/home/.nimble/bin:$PATH
           cd $GITHUB_WORKSPACE
           choosenim 1.4.0
           nim -v
