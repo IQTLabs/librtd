@@ -10,4 +10,3 @@ skipDirs      = @["tests"]
 # Dependencies
 
 requires "nim >= 1.0.4"
-requires "progress >= 1.1.1"

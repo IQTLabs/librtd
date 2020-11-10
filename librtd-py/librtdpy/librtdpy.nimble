@@ -9,5 +9,6 @@ license       = "Apache-2.0"
 # Dependencies
 
 requires "nim >= 1.0.4"
-requires "nimpy"
+requires "nimpy >= 0.1.1"
 requires "librtd"
+requires "progress >= 1.1.1"
