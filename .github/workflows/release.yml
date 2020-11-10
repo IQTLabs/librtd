@@ -26,8 +26,10 @@ jobs:
           cd ../librtd-py/librtdpy
           nimble install -Y
           cd ../
-          for PYBIN in /opt/python/*/bin; do
+          for PYBIN in /opt/python/*/bin/; do 
+            if ! test $PYBIN -ef /opt/python/cp35-cp35m/bin/; then
               "${PYBIN}/pip" install setuptools wheel twine nimporter>=1.0.2
               "${PYBIN}/pip" wheel . --no-deps -w wheelhouse/
+            fi
           done
           ls dist
