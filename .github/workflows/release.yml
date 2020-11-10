@@ -9,12 +9,12 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v2
-      - run: |
-          cd $GITHUB_WORKSPACE
-          ls
       - name: Install Nim
+        env:
+          hello: world
         run: |
-          cd ~
+          echo $hello
+          cd $GITHUB_WORKSPACE
           curl -O https://nim-lang.org/choosenim/init.sh
           sh init.sh -y
           export PATH=/root/.nimble/bin:$PATH
@@ -23,6 +23,7 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
+          nim -v
           python -m pip install --upgrade pip
           python -m pip install setuptools wheel twine nimporter>=1.0.2
           cd librtd
