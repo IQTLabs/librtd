@@ -21,8 +21,6 @@ jobs:
           cd $GITHUB_WORKSPACE
           choosenim 1.4.0
           nim -v
-
-          python -m pip install 
           cd librtd
           nimble install -Y
           cd ../librtd-py/librtdpy
