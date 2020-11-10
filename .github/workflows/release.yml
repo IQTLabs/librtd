@@ -21,15 +21,15 @@ jobs:
           cd $GITHUB_WORKSPACE
           choosenim 1.4.0
           nim -v
-          python -m pip install --upgrade pip
-          python -m pip install setuptools wheel twine nimporter>=1.0.2
+
+          python -m pip install 
           cd librtd
           nimble install -Y
-          cd ../librtd-py
-          cd librtdpy
+          cd ../librtd-py/librtdpy
           nimble install -Y
           cd ../
-          python setup.py bdist_wheel
-          WHEEL=dist/$(python3 -c 'import pathlib;print([*pathlib.Path("dist").glob("benjamin-lee*")][0].name.replace("linux", "manylinux1"))')
-          mv dist/$(python -c "import pathlib;print([*pathlib.Path('dist').glob('benjamin-lee*')][0].name)") $WHEEL
+          for PYBIN in /opt/python/*/bin; do
+              "${PYBIN}/pip" install setuptools wheel twine nimporter>=1.0.2
+              "${PYBIN}/pip" wheel . --no-deps -w wheelhouse/
+          done
           ls dist
