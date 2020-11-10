@@ -7,9 +7,10 @@
 
 import unittest
 import sequtils
-import librtd
 import random
 import tables
+import algorithm
+include librtd # needed since kmers is not exported
 
 suite "kmers":
   test "total number of k-mers is correct":
@@ -44,25 +45,14 @@ suite "kmers":
   test "degenerate sequence raises an error":
     expect DegenerateBaseError:
       discard toSeq(kmers("ATGCN", 1))
-    
-suite "kmersIndices":
-  test "k=1":
-    let dna = "ATCGGGACCT"
+
+  test "backwards iteration":
     check:
-      kmerIndices(dna, 1) == {"C": @[2, 7, 8], 
-                              "A": @[0, 6], 
-                              "T": @[1, 9], 
-                              "G": @[3, 4, 5]}.toTable
-
-  test "k=2":
-    check kmerIndices("ACG", 2) == {"AC": @[0], "CG": @[1]}.toTable
-
-  test "k=3":
-    check kmerIndices("ACGGC", 3) == {"ACG": @[0], "CGG": @[1], "GGC": @[2]}.toTable
-
-  test "missing k-mer isn't in the output table":
-    check kmerIndices("ACG", 1) == {"C": @[1], "A": @[0], "G": @[2]}.toTable
-
+      toSeq(kmers("ATGC", 1, fromEnd=true)) == @[(0, "A"), (1, "T"), (2, "G"), (3, "C")].reversed
+      toSeq(kmers("ATGC", 2, fromEnd=true)) == @[(0, "AT"), (1, "TG"), (2, "GC")].reversed
+      toSeq(kmers("ATGC", 3, fromEnd=true)) == @[(0, "ATG"), (1, "TGC")].reversed
+      toSeq(kmers("ATGC", 4, fromEnd=true)) == @[(0, "ATGC")].reversed
+    
 suite "sameKmerReturnTimes":
   test "k=1":
     check:
@@ -72,14 +62,6 @@ suite "sameKmerReturnTimes":
     check sameKmerReturnTimes("ATCGAT", 2) == {"AT": @[4]}.toTable
   test "k=3":
     check sameKmerReturnTimes("ATCATC", 3) == {"ATC": @[3]}.toTable
-
-suite "distToNextGreaterIndex":
-  test "documentation example":
-    check distToNextGreaterIndex(@[1, 3, 5, 6, 9], @[2, 4, 7]) == @[1, 1, 2, 1]
-  test "all indices in the second seq are greater than largest of first":
-    check distToNextGreaterIndex(@[1, 2, 3], @[4, 5, 6]) == @[3, 2, 1]
-  test "no indices in the second seq are larger than any seq":
-    check distToNextGreaterIndex(@[4, 5, 6], @[1, 2, 3]) == newSeq[int]()
 
 suite "pairwiseKmerReturnTimes":
   test "documentation example":
