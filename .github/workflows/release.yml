@@ -34,9 +34,9 @@ jobs:
           cd librtdpy
           nimble install -Y
           cd ../
-          python3 setup.py bdist_wheel
-          WHEEL=dist/$(python3 -c 'import pathlib;print([*pathlib.Path("dist").glob("pebaz*")][0].name.replace("linux", "manylinux1"))')
-          mv dist/$(python -c "import pathlib;print([*pathlib.Path('dist').glob('pebaz*')][0].name)") $WHEEL
+          python setup.py bdist_wheel
+          WHEEL=dist/$(python3 -c 'import pathlib;print([*pathlib.Path("dist").glob("benjamin-lee*")][0].name.replace("linux", "manylinux1"))')
+          mv dist/$(python -c "import pathlib;print([*pathlib.Path('dist').glob('benjamin-lee*')][0].name)") $WHEEL
           ls dist
           twine upload dist/*
 
@@ -69,7 +69,7 @@ jobs:
           cd librtdpy
           nimble install -Y
           cd ../
-          python3 setup.py bdist_wheel
+          python setup.py bdist_wheel
           twine upload dist/*
 
   build-macos:
@@ -100,5 +100,5 @@ jobs:
           cd librtdpy
           nimble install -Y
           cd ../
-          python3 setup.py bdist_wheel
+          python setup.py bdist_wheel
           twine upload dist/*
