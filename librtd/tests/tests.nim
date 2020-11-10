@@ -83,7 +83,7 @@ suite "distToNextGreaterIndex":
 
 suite "pairwiseKmerReturnTimes":
   test "documentation example":
-    check pairwiseKmerReturnTimes("ATAAT", 1) == {"A_T": @[1, 2, 1], "A_A": @[2, 1], "T_A": @[1], "T_T": @[3]}.toTable
+    check pairwiseKmerReturnTimes("ATAAT", 1) == {"A_T": @[1, 2, 1], "A_A": @[1, 2], "T_A": @[1], "T_T": @[3]}.toTable
   test "k=2 tiny example":
     check:
       pairwiseKmerReturnTimes("ATAAT", 2) == {"AT_TA": @[1], 
@@ -105,10 +105,17 @@ suite "reverseComplementReturnTimes":
                                                           "T_rc": @[3],
                                                           "G_rc": @[1],
                                                           "C_rc": @[2]}.toTable
+  test "k=2":
+    check reverseComplementReturnTimes("ATGACAGATACCACCAATGACAG", 2) == {"TG_rc": @[3, 3], 
+                                                                         "AT_rc": @[9, 7], 
+                                                                         "CA_rc": @[3, 6, 13]}.toTable
 
 suite "returnTimeDistribution":
   test "documentation example":
     check returnTimeDistribution("AAATAGA", 1) == {"A_mean": 1.5, "A_std": 0.5}.toTable
+  
+  test "reverse complement":
+    check returnTimeDistribution("ATATGGGGGGGAT", 2, reverseComplement=true) == {"AT_rc_mean": 5.5, "AT_rc_std": 3.5}.toTable
 
   test "check length is as expected":
     let dna = "ATAGCAAGGATACAGATA"
