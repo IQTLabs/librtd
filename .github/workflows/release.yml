@@ -32,4 +32,5 @@ jobs:
               "${PYBIN}/pip" wheel . --no-deps -w wheelhouse/
             fi
           done
-          ls dist
+          ls
+          ls wheelhouse/
