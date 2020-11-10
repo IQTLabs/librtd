@@ -10,10 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install Nim
-        env:
-          hello: world
         run: |
-          echo $hello
           cd $GITHUB_WORKSPACE
           curl -O https://nim-lang.org/choosenim/init.sh
           sh init.sh -y
@@ -22,7 +19,9 @@ jobs:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
+          cd $GITHUB_WORKSPACE
           export PATH=/root/.nimble/bin:$PATH
+          choosenim 1.4.0
           nim -v
           python -m pip install --upgrade pip
           python -m pip install setuptools wheel twine nimporter>=1.0.2
