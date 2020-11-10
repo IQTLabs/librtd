@@ -9,17 +9,14 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v2
-      - name: Install Nim
-        run: |
-          cd $GITHUB_WORKSPACE
-          curl -O https://nim-lang.org/choosenim/init.sh
-          sh init.sh -y
       - name: Build and publish
         env:
           TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
           TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         run: |
           cd $GITHUB_WORKSPACE
+          curl -O https://nim-lang.org/choosenim/init.sh
+          sh init.sh -y
           export PATH=/root/.nimble/bin:$PATH
           choosenim 1.4.0
           nim -v
