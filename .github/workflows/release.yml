@@ -9,9 +9,9 @@ jobs:
       image: quay.io/pypa/manylinux2014_x86_64
     steps:
       - uses: actions/checkout@v2
-      - run: ls /github/home
-      - run: ls /github/workflow
-      - run: echo $GITHUB_WORKSPACE
+      - run: |
+          cd $GITHUB_WORKSPACE
+          ls
       - name: Install Nim
         run: |
           cd ~
