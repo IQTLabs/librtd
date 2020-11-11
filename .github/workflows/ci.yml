@@ -67,7 +67,7 @@ jobs:
           nim doc -o:docs/ librtd.nim
           mv docs/librtd.html docs/index.html
       - name: Push to GitHub Pages
-        uses: crazy-max/ghaction-github-pages@v1
+        uses: crazy-max/ghaction-github-pages@v2
         with:
           target_branch: gh-pages
           build_dir: librtd/docs
