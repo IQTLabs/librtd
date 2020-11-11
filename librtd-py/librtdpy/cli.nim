@@ -9,7 +9,7 @@ import strformat
 import librtd
 import tables
 
-const version = "0.1"
+const version = "0.0.2.2"
 
 # Some short templates for prettier output
 template styledWrite(color: ForegroundColor, messageType: string, message: string ) = 
@@ -35,7 +35,7 @@ iterator fasta(filename: string): tuple[id: string, sequence: string] =
   yield (id, row)
   row = ""
 
-proc main*(k: int, input: string, output: string = "stdout", reverseComplement: bool = false, pairwise: bool = false) {.exportpy}= 
+proc main*(k: int, input: string, output: string = "stdout", reverseComplement: bool = false, pairwise: bool = false) {.exportpy.} =
 
   # check that args are valid
   if k <= 0:

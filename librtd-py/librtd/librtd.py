@@ -1,4 +1,18 @@
-"""Return time distribution (RTD) calculation.
+# flake8: noqa
+
+import pkg_resources
+
+__version__ = pkg_resources.get_distribution("librtd").version
+
+import nimporter
+from librtdpy import (
+    main
+)
+
+from docopt import docopt
+# from cli import main
+
+docstring = """Return time distribution (RTD) calculation.
 
 Takes input FASTA files and outputs a line-delimited JSON (.jsonl) file containing the RTD for each k-mer.
 If no output file is specified, it will be written to stdout.
@@ -15,14 +29,10 @@ Options:
 -h, --help                Show this screen.
 --version                 Show version.
 """
-from docopt import docopt
-import nimporter # noqa
-from cli import main
-from librtd import __version__
 
 
-def cli_wrapper():
-    arguments = docopt(__doc__, version="librtd v" + __version__)
+def _cli_wrapper():
+    arguments = docopt(docstring, version="librtd v" + __version__)
     output = arguments["<output>"] if arguments["<output>"] is not None else "stdout"
     main(
         int(arguments["<k>"]),
@@ -31,7 +41,3 @@ def cli_wrapper():
         reverseComplement=arguments["--reverse-complement"],
         pairwise=arguments["--pairwise"],
     )
-
-
-if __name__ == "__main__":
-    cli_wrapper()
