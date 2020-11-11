@@ -3,7 +3,7 @@ import nimporter
 
 setup(
     name="librtd",
-    version="0.0.3",
+    version="0.0.3.1",
     author="Benjamin D. Lee",
     author_email="benjamindlee@me.com",
     packages=["librtd"],

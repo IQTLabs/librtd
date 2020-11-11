@@ -9,7 +9,7 @@ import strformat
 import librtd
 import tables
 
-const version = "0.0.3"
+const version = "0.0.3.1"
 
 # Some short templates for prettier output
 template styledWrite(color: ForegroundColor, messageType: string, message: string ) = 
