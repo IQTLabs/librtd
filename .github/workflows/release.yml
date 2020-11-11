@@ -32,5 +32,7 @@ jobs:
               "${PYBIN}/pip" wheel . --no-deps -w wheelhouse/
             fi
           done
-          ls
+          for whl in wheelhouse/*.whl; do
+              auditwheel repair "$whl"
+          done
           ls wheelhouse/
