@@ -36,5 +36,5 @@ jobs:
           for whl in wheelhouse/*.whl; do
               auditwheel repair "$whl" -w ../repaired
           done
-          ls wheelhouse/
-          ls repaired
+          ls repaired/
+          # twine upload repaired/*
