@@ -10,7 +10,7 @@ setup(
     description="Generalized k-mer return time distribution calculation",
     long_description="For the README, please look [here](https://github.com/IQTLabs/librtd)",
     long_description_content_type="text/markdown",
-    install_requires=["docopt"],
+    install_requires=["docopt", "nimporter"],
     url="https://github.com/IQTLabs/librtd",
     ext_modules=nimporter.build_nim_extensions(danger=True),
     entry_points={"console_scripts": ["rtd = librtd.librtd:_cli_wrapper"]},
