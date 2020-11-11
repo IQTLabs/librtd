@@ -36,4 +36,4 @@ jobs:
           for whl in wheelhouse/*.whl; do
               auditwheel repair "$whl" -w repaired
           done
-          twine upload repaired/*
+          /opt/python/cp39-cp39/bin/twine upload repaired/*
