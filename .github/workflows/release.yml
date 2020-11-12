@@ -1,4 +1,5 @@
 # Modified from https://github.com/Pebaz/nimporter/blob/f472fd23988702ab23450e85a92c8ee07b9977f2/examples/github_actions_template.yml
+# Linux build steps modified from https://github.com/pypa/python-manylinux-demo/blob/master/travis/build-wheels.sh
 
 name: Release
 
