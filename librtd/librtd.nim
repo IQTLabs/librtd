@@ -81,15 +81,15 @@ iterator kmers(x: string, k: Positive, degeneratesAllowed = false, fromEnd = fal
   if k > x.len:
     raise newException(InvalidKmerLengthError, &"Unable to generate {k}-mers since {k} is longer than the input sequence, which is {x.len} bases long")
 
-  if x.toUpper.count({'A'..'Z', '0'..'9'} - {'A', 'U', 'T', 'G', 'C'}) > 0 and not degeneratesAllowed:
+  if x.toUpperAscii.count({'A'..'Z', '0'..'9'} - {'A', 'U', 'T', 'G', 'C'}) > 0 and not degeneratesAllowed:
     raise newException(DegenerateBaseError, "Degenerate bases do not have defined RTD.")
 
   if not fromEnd:
     for i in 0..(x.len - k):
-      yield (i, x[i ..< i + k].toUpper)
+      yield (i, x[i ..< i + k].toUpperAscii)
   else:
     for i in countdown(x.len - k, 0):
-      yield (i, x[i ..< i + k].toUpper) 
+      yield (i, x[i ..< i + k].toUpperAscii) 
 
 func sameKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] = 
   ## Compute the return times for *k*-mers in `x`.
@@ -104,14 +104,26 @@ func sameKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
         result[kmer].add(i - lastIndex[kmer])
     lastIndex[kmer] = i
 
-func reverseComplement(seq: string): string =
-  ## Computes the reverse complement of a nondegenerate sequence.
-  const mapping = {'A': 'T', 'a': 'T',
-                   'T': 'A', 't': 'A',
-                   'G': 'C', 'g': 'C',
-                   'C': 'G', 'c': 'G'}.toTable
-  for i in countdown(seq.high, seq.low):
-    result.add(mapping[seq[i]])
+proc reverseComplement*(x: cstring): cstring = 
+  # Note that this function takes cstrings for compatibility with the JS backend.
+  # Not sure why it needed it but it refused to work with vanilla Nim strings.
+  var res = newString(x.len)
+  var i = x.high
+  var j = 0
+  while i >= 0:
+    if x[j] == 'A':
+      res[i] = 'T'
+    elif  x[j] == 'T':
+      res[i] = 'A'
+    elif  x[j] == 'G':
+      res[i] = 'C'
+    elif  x[j] == 'C':
+      res[i] = 'G'
+    else:
+      raise newException(CatchableError, "Invalid character in sequence")
+    inc(j)
+    dec(i)
+  return res.cstring
 
 func pairwiseKmerReturnTimes*(x: string, k: Positive): Table[string, seq[int]] =
   ## Calculates the return times between each pair of *k*-mers in the input table.
@@ -153,7 +165,7 @@ func reverseComplementReturnTimes*(x: string, k: Positive): Table[string, seq[in
   var lastIndex = initTable[string, int]()
   var rc: string
   for i, kmer in x.kmers(k, fromEnd=true):
-    rc = kmer.reverseComplement
+    rc = $(kmer.reverseComplement) # conversion needed for JS
     if rc in lastIndex and result.hasKeyOrPut(kmer & "_rc", @[lastIndex[rc] - i]):
         result[kmer & "_rc"].add(lastIndex[rc] - i)
     lastIndex[kmer] = i
